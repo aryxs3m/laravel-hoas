@@ -30,6 +30,19 @@ php artisan vendor:publish --provider="Aryxs3m\LaravelHoas\Providers\HomeAssista
 Fill up `config/hoas.php` with your MQTT broker's parameters or use the predefined environment variables. See the config
 file.
 
+Add the provider to your `app.php` config:
+
+```php
+
+    'providers' => ServiceProvider::defaultProviders()->merge([
+        /*
+         * Package Service Providers...
+         */
+
+        \Aryxs3m\LaravelHoas\Providers\HomeAssistantProvider::class,
+    ])->toArray(),
+```
+
 ## Usage
 
 First, you need to create your device and it's entities.
