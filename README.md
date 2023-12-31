@@ -2,9 +2,9 @@
 
 With this simple package you can create Home Assistant devices and entities (via MQTT).
 
-You can create two-way communication with your Home Assistant instance: e.g. publish sensors that produce data for
+You can achieve two-way communication with your Home Assistant instance: publish sensors that produce data for
 your Home Assistant instance, or publish switches which you can change in Home Assistant and modify your Laravel app's
-behaviour.
+behavior.
 
 **Currently supported entity types:**
 
@@ -26,6 +26,9 @@ Publish config:
 ```shell
 php artisan vendor:publish --provider="Aryxs3m\LaravelHoas\Providers\HomeAssistantProvider"
 ```
+
+Fill up `config/hoas.php` with your MQTT broker's parameters or use the predefined environment variables. See the config
+file.
 
 ## Usage
 
@@ -164,8 +167,8 @@ public function boot(): void
 
 #### Switches
 
-You can add `onTurnOn` and `onTurnOff` functions to your switch implementation, as seen in the example above.
-These functions will be invoked when the state changes from Home Assistant.
+You can add `onTurnOn` and `onTurnOff` functions to your switch class, as seen in the example above.
+These functions will be called when the state changed from Home Assistant.
 
 On switches, you can also use the `isTurnedOn` static function anywhere in your application:
 
@@ -177,7 +180,7 @@ if (TestSwitch::isTurnedOn()) {
 
 #### Buttons
 
-Similar to switches, you can implement the `onPress` function on your button class. This function will be invoked when
+Similar to switches, you can implement the `onPress` function in your button class. This function will be called when
 the button is pressed in Home Assistant.
 
 See the example above.
@@ -202,9 +205,21 @@ TestSensor::set(13);
 dd(TestSensor::get());
 ```
 
+### Publishing your devices
+
+Your devices will be automatically published if Laravel scheduler is configured.
+
+However, for testing, you can always publish your devices to see the changes instantly with the `hoas:publish` Artisan
+command.
+
+The example from above looks like this:
+
+![Home Assistant device](example.png)
+
 ### Listen to events
 
-Configuring [Laravel command scheduling](https://laravel.com/docs/10.x/scheduling) is required for this package to work.
+Configuring [Laravel command scheduling](https://laravel.com/docs/10.x/scheduling) is **required** for this package to
+work. This package does everything else for you.
 
 The scheduler calls the `hoas:listener` command every minute. This command receives the MQTT messages from Home
 Assistant. Also, this command publishes your devices and entities.
