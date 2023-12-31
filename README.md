@@ -119,6 +119,32 @@ class TestSensor extends HomeAssistantSensor
 }
 ```
 
+**Calculated Sensor** example:
+
+You can create sensors that are "stateless". You need to add the `CalculatedEntityState` to your sensor or binary
+sensor, then implement the `getCalculatedValue` function. These sensors are updating automatically every minute.
+
+```php
+<?php
+
+namespace App\HomeAssistant;
+
+use Aryxs3m\LaravelHoas\Services\Entities\HomeAssistantSensor;use Aryxs3m\LaravelHoas\Services\Entities\Types\SensorDeviceClass;
+
+class TestCalculatedSensor extends HomeAssistantSensor
+{
+    use CalculatedEntityState;
+
+    protected static string $id = 'test_calculated_sensor';
+    protected ?string $friendlyName = 'Random number';
+
+    public function getCalculatedValue(): int
+    {
+        return rand(1, 1000);
+    }
+}
+```
+
 **Device** example:
 
 ```php
@@ -221,5 +247,4 @@ The example from above looks like this:
 Configuring [Laravel command scheduling](https://laravel.com/docs/10.x/scheduling) is **required** for this package to
 work. This package does everything else for you.
 
-The scheduler calls the `hoas:listener` command every minute. This command receives the MQTT messages from Home
-Assistant. Also, this command publishes your devices and entities.
+The scheduler calls the `hoas:listener` add `hoas:update-calculated-entities` command every minute. 

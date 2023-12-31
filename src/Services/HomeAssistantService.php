@@ -7,6 +7,7 @@ use Aryxs3m\LaravelHoas\Services\Entities\HomeAssistantEntityInterface;
 use Aryxs3m\LaravelHoas\Services\Entities\HomeAssistantSensor;
 use Aryxs3m\LaravelHoas\Services\Entities\HomeAssistantSwitch;
 use Aryxs3m\LaravelHoas\Services\Entities\Traits\ActionableEntity;
+use Aryxs3m\LaravelHoas\Services\Entities\Traits\CalculatedEntityState;
 use Illuminate\Support\Facades\Cache;
 use PhpMqtt\Client\ConnectionSettings;
 use PhpMqtt\Client\Exceptions\ConfigurationInvalidException;
@@ -242,6 +243,43 @@ class HomeAssistantService
         }
 
         $this->updateEntityStore($entity);
+    }
+
+    /**
+     * Updates all calculated entities and publish their states.
+     *
+     * @throws ConfigurationInvalidException
+     * @throws ConnectingToBrokerFailedException
+     * @throws RepositoryException
+     * @throws ProtocolNotSupportedException
+     * @throws DataTransferException
+     */
+    public function updateCalculatedEntities(): void
+    {
+        foreach ($this->devices as $device) {
+            foreach ($device->getEntities() as $entity) {
+                if (in_array(CalculatedEntityState::class, class_uses_recursive($entity::class))) {
+                    $this->updateCalculatedEntity($entity);
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates a calculated entity and publishes its new state.
+     *
+     * @throws ConnectingToBrokerFailedException
+     * @throws ConfigurationInvalidException
+     * @throws RepositoryException
+     * @throws ProtocolNotSupportedException
+     * @throws DataTransferException
+     */
+    protected function updateCalculatedEntity(HomeAssistantEntityInterface $entity): void
+    {
+        /** @var $entity CalculatedEntityState */
+        $value = $entity->getCalculatedValue();
+        $this->updateEntityValue($entity, $value);
+        $this->publishEntityState($entity);
     }
 
     /**
