@@ -1,0 +1,19 @@
+{
+    "name": "aryxs3m/laravel-hoas",
+    "description": "Connect your Laravel application with your Home Assistant instance.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Aryxs3m\\LaravelHoas\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "aryxs3m"
+        }
+    ],
+    "require": {
+        "php-mqtt/laravel-client": "^1.4"
+    }
+}
